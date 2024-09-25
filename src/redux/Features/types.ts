@@ -1,9 +1,9 @@
 export interface UserProps {
-    _id: string;
+    _id: string ;
     name: string;
-    favourite: string[];
-
+    favourite?: string[];  // Optional, in case the user has no favorites
 }
+
 export interface LoginUserInputProps {
     name: string;
     password: string;
@@ -13,120 +13,130 @@ export interface RegistrationInputProps {
     name?: string;
     password?: string;
     confirmPassword?: string;
-
 }
-
 
 export interface RegistrationResponseProps {
     message: string;
 }
 
-export interface authStateProps {
+export interface AuthStateProps {
     userInfo: UserProps | null;
 }
 
-export interface resTypeProps {
-    userInfo: UserProps;
+export interface ResTypeProps {
+    userInfo: UserProps ;
 }
 
-// export interface categoryResTypeProps {
-//     _id: string;
-//     name: string;
-//     description: string;
-//     image: string;
-//     createdAt: string;
-//     updatedAt: string;
-// }
 
-// export interface productResTypeProps {
-//     _id: string;
-//     name: string;
-//     description: string;
-//     images: [
-//         {
-//             public_id: string;
-//             secure_url: string;
-//         }
-//     ];
-//     seller: string;
-//     price: number;
-//     isApproved: boolean;
-//     category: string;
-//     status: 'available' | 'sold' | 'lent' | 'pending';
-//     createdAt: string;
-//     updatedAt: string;
-// }
+export interface Subtask {
+    _id: string;
+    description: string;
+    status: boolean;
+    date: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    subtasks?: Subtask[];
+}
 
-// export interface paramsProps {
-//     keyword: string;
-//     page: number;
-//     category?: string | null;
-//     min?: string | null;
-//     max?: string | null;
-//     sortBy?: string | null;
-// }
+export interface AddSubTaskProps {
+    taskId: string;
+    onClose: () => void;
+}
 
-// export interface ProductCardProps {
-//     products: productResTypeProps[];
-//     filteredProductCount: number;
-//     resPerPage: number;
-// }
+export interface Task {
+    _id: string;
+    date: string;
+    description: string;
+    status: boolean;
+    subtasks: Subtask[];
+    createdAt: Date;
+    updatedAt: Date;
+}
 
-// export interface wishlistResType {
-//     wishlist: productResTypeProps[];
-// }
+export interface collectionResTyp {
+    _id: string;
+    collectionName: string;
+    collectionImg: string;
+    createdAt: Date;
+    updatedAt: Date;
+    tasks: Task[];
+}
 
-// export interface updateProfileProps {
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//     username: string;
-//     phoneNumber: string;
-//     schoolId: string;
-// }
+export interface GetAllCollectionsResponse {
+    success: boolean;
+    collections: collectionResTyp[];
+}
 
-// export interface bidProps {
-//     _id: string;
-//     productId: string;
-//     bidderId: string;
-//     productName: string;
-//     sellerId: string;
-//     message: string;
-//     amount: number;
-//     status: 'pending' | 'accepted' | 'rejected';
-//     createdAt: string;
-//     updatedAt: string;
-// }
+export interface GetCollectionByIdResponse {
+    success: boolean;
+    collection: collectionResTyp;
+}
+export interface EditTaskInputProps {
+    id: string;
+    description?: string;
+    date?: string;
+    status?: boolean;
+}
+export interface TaskListProps {
+    task: Task | null;
+}
+export type CollectionsData = {
+    collections: collectionResTyp[];
+};
+export interface EditTaskProps {
+    task: {
+        _id: string;
+        description: string;
+        date: Date;
+        status: boolean;
+    };
+    onClose: () => void;
+}
+export interface favouritesResType {
+    favourite: collectionResTyp[];
+}
+export interface SubtaskListProps {
+    subtasks: Subtask[];
+}
+export interface EditTaskProp {
+    task: Task;
+    onClose: () => void; // Function to close the modal
+  }
 
-// export interface chapaPaymentUrlResProps {
-//     success: boolean;
-//     data: {
-//         data: {
-//             checkout_url: string;
-//         };
-//         message: string;
-//         status: string;
-//     };
-// }
-
-// export interface transactionsProps {
-//     type: string;
-//     _id: string;
-//     productId: string;
-//     sellerId: string;
-//     customerFirstName: string;
-//     customerLastName: string;
-//     price: string;
-//     customerEmail: string;
-//     tx_ref: string;
-//     productName: string;
-//     status: 'pending' | 'success';
-//     balance: string;
-//     bits_transaction_charge: string;
-//     chapa_transactio_charge: string;
-//     created_at: string;
-//     currency: string;
-//     payment_method: string;
-//     reference: string;
-//     updated_at: string;
-// }
+  export interface Subtask {
+    _id: string;
+    description: string;
+    status: boolean; // Assuming status is a boolean indicating completion
+  }
+  
+  export interface Task {
+    _id: string;
+    description: string;
+    status: boolean; // Assuming status is a boolean indicating completion
+    date: string; // Assuming date is in ISO format
+    subtasks: Subtask[]; // Array of subtasks
+  }
+  
+  export interface TaskListProps {
+    tasks: Task[]; // Array of Task objects
+  }
+  export interface Task {
+    _id: string;
+    description: string;
+    status: boolean; // Assuming status is a boolean indicating completion
+    date: string; // Assuming date is in ISO format
+  }
+  
+  export interface Collection {
+    _id: string;
+    collectionName: string;
+    tasks: Task[];
+  }
+  
+  export interface UserFavouritesResponse {
+    favourite: Collection[]; // Assuming this is the structure of the user's favourites
+  }
+  
+export interface TaskListProps {
+    tasks: Task[]; // Ensure this is an array of Task objects
+}

@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { authStateProps, UserProps } from './types';
+import { AuthStateProps, UserProps } from './types';
 
-const initialState: authStateProps = {
+const initialState: AuthStateProps = {
     userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')!) : null
 };
 

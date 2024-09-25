@@ -1,3 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap");
+@import "flowbite/dist/flowbite.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+* {
+  font-family: Quicksand, sans-serif;
+  font-weight: 500;
+}
+.use {
+  font-family: Quicksand, sans-serif;
+  font-weight: 700;
+}
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  scroll-behavior: smooth;
+}

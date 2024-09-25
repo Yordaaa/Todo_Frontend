@@ -1,8 +1,8 @@
 import { apiSlice } from './apiSlice';
-import { LoginUserInputProps, RegistrationInputProps, RegistrationResponseProps, resTypeProps } from './types';
+import { LoginUserInputProps, RegistrationInputProps, RegistrationResponseProps, ResTypeProps } from './types';
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        login: builder.mutation<resTypeProps, LoginUserInputProps>({
+        login: builder.mutation<ResTypeProps, LoginUserInputProps>({
             query: (data) => {
                 return {
                     url: '/auth/login',
@@ -12,7 +12,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }
         }),
 
-        logoutApi: builder.mutation<void, void>({
+        logout: builder.mutation<void, void>({
             query: () => ({
                 url: '/auth/logout',
                 method: 'POST'
@@ -26,8 +26,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 body: data
             })
         }),
-       
+
     })
 });
 
-export const { useLoginMutation, useLogoutApiMutation, useRegistrationMutation } = authApiSlice;
+export const { useLoginMutation, useLogoutMutation, useRegistrationMutation } = authApiSlice;
