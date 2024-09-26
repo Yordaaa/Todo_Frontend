@@ -1,5 +1,9 @@
 import { apiSlice } from "./apiSlice";
-import { GetAllCollectionsResponse, GetTasksResponseProps } from "./types";
+import {
+  GetAllCollectionsResponse,
+  getSubTaskProps,
+  GetTasksResponseProps,
+} from "./types";
 
 export const taskApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -59,6 +63,16 @@ export const taskApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["tasks"],
     }),
+    getSubTasks: builder.query<getSubTaskProps, string | undefined>({
+      query: (taskId) => {
+        console.log(taskId);
+        return {
+          url: `/tasks/get-subtasks/${taskId}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["tasks"],
+    }),
   }),
 });
 
@@ -70,4 +84,5 @@ export const {
   useAddSubtaskMutation,
   useEditTaskMutation,
   useGetUserTaskQuery,
+  useGetSubTasksQuery,
 } = taskApiSlice;

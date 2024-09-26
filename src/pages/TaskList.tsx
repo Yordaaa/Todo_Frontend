@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { SubtaskList } from "./SubTaskList";
-import { useUpdateTaskStatusMutation } from "../redux/Features/taskApiSlice";
+import {
+  useGetSubTasksQuery,
+  useUpdateTaskStatusMutation,
+} from "../redux/Features/taskApiSlice";
 import AddSubTask from "./AddSubTask";
 import { Modal } from "flowbite-react";
 import EditTask from "./EditTask";
@@ -18,6 +21,7 @@ export const TaskList = ({ tasks }: TaskListProps) => {
   const [openTaskModal, setOpenTaskModal] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [showDate, setShowDate] = useState<Record<string, boolean>>({});
+  const [taskId, setTaskId] = useState(""); // Changed variable name to avoid confusion
 
   const handleCheckboxChange = async (task: Task) => {
     const newStatus = !task.status;
@@ -39,6 +43,7 @@ export const TaskList = ({ tasks }: TaskListProps) => {
     setCurrentTask(task);
     setIsAddingSubtask(task._id);
     setOpenTaskModal(true);
+    setTaskId(task._id); // Set taskId here when a specific task is interacted with
   };
 
   // Toggle date visibility
@@ -48,6 +53,8 @@ export const TaskList = ({ tasks }: TaskListProps) => {
       [taskId]: !prev[taskId],
     }));
   };
+
+  const { data, isLoading: subtasksLoading } = useGetSubTasksQuery(taskId);
 
   return (
     <div>
@@ -72,19 +79,19 @@ export const TaskList = ({ tasks }: TaskListProps) => {
             <div>
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <MenuButton className="">
+                  <MenuButton>
                     <i className="fas fa-edit"></i>
                   </MenuButton>
                 </div>
 
                 <MenuItems
                   transition
-                  className="p-3 absolute right-0 z-10 mt-2 w-[140px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  className="p-3 absolute right-0 z-10 mt-2 w-[140px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none"
                 >
                   <MenuItem>
                     <button
                       onClick={() => openModalForAddSubtask(task)}
-                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700"
                     >
                       Add Subtask
                     </button>
@@ -92,13 +99,13 @@ export const TaskList = ({ tasks }: TaskListProps) => {
                   <MenuItem>
                     <button
                       onClick={() => openModalForEdit(task)}
-                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700"
                     >
                       Edit task
                     </button>
                   </MenuItem>
                   <MenuItem>
-                    <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
+                    <button className="block w-full px-4 py-2 text-left text-sm text-gray-700">
                       Delete task
                     </button>
                   </MenuItem>
@@ -117,7 +124,12 @@ export const TaskList = ({ tasks }: TaskListProps) => {
             </p>
           )}
 
-          <SubtaskList subtasks={task.subtasks} />
+          {/* Render subtasks if available */}
+          {subtasksLoading ? (
+            <p>Loading subtasks...</p>
+          ) : (
+            <SubtaskList subtasks={data?.subtasks} />
+          )}
 
           {/* Modal for adding subtask or editing task */}
           {openTaskModal && (

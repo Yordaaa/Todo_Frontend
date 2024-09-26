@@ -17,7 +17,7 @@ function Header() {
   const handleLogout = async () => {
     await logoutApi();
     dispatch(logout());
-    navigate("/");
+    navigate("/login");
   };
 
   useEffect(() => {

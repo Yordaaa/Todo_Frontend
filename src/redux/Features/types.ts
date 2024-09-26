@@ -95,7 +95,7 @@ export interface favouritesResType {
   favourite: collectionResTyp[];
 }
 export interface SubtaskListProps {
-  subtasks: Subtask[];
+  subtasks: Subtask[] | undefined;
 }
 export interface EditTaskProp {
   task: Task;
@@ -105,7 +105,11 @@ export interface EditTaskProp {
 export interface Subtask {
   _id: string;
   description: string;
-  status: boolean; // Assuming status is a boolean indicating completion
+  date: Date;
+  status: boolean;
+  subtasks?: Subtask[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Task {
@@ -139,4 +143,9 @@ export interface UserFavouritesResponse {
 export interface GetTasksResponseProps {
   success: boolean;
   tasks: Task[];
+}
+
+export interface getSubTaskProps {
+  success: boolean;
+  subtasks: Subtask[];
 }

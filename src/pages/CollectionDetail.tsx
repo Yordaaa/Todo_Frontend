@@ -1,6 +1,8 @@
-import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useGetUserTaskByIdQuery } from "../redux/Features/taskApiSlice";
+import {
+  useGetSubTasksQuery,
+  useGetUserTaskByIdQuery,
+} from "../redux/Features/taskApiSlice";
 import { TaskList } from "./TaskList";
 import Sidenav from "../components/Sidenav";
 import { useSelector } from "react-redux";
@@ -12,14 +14,20 @@ import {
 } from "../redux/Features/userApiSlice";
 import { toast } from "react-toastify";
 import { Task } from "../redux/Features/types";
+import { useState } from "react";
 import AddTaskModal from "../components/AddTaskModal";
+
 function CollectionDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const userInfo = useSelector(selectUser);
   const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
+  console.log("object", id);
   const { data: collectionTasks, isLoading } = useGetUserTaskByIdQuery(
-    id as string
+    id as string,
+    {
+      refetchOnMountOrArgChange: true,
+    }
   );
   console.log(collectionTasks);
   const [addfavourite] = useAddfavouriteMutation();
@@ -29,7 +37,7 @@ function CollectionDetails() {
 
   const handleAddfavourite = async (collectionId?: string) => {
     if (!userInfo) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
@@ -45,7 +53,7 @@ function CollectionDetails() {
   const handleRemoveFromfavourite = async (collectionId?: string) => {
     console.log(collectionId);
     if (!userInfo) {
-      navigate("/login", { state: `/${collectionId}` });
+      navigate("/", { state: `/${collectionId}` });
       return;
     }
 
@@ -65,7 +73,7 @@ function CollectionDetails() {
   });
 
   return (
-    <>
+    <div key={id}>
       {isLoading ? (
         "loading..."
       ) : (
@@ -80,7 +88,7 @@ function CollectionDetails() {
                 className="fas fa-less-than bg-pink-400 py-1 px-2 text-gray-800 rounded text-xs"
               ></Link>
               <h1 className="text-2xl font-bold dark:text-white">
-                {collectionName?.[0] || "No Collection Name"}
+                {collectionName}
               </h1>
               {isInfavourite ? (
                 <button
@@ -129,7 +137,7 @@ function CollectionDetails() {
         showModal={openTaskModal}
         onClose={() => setOpenTaskModal(false)}
       />
-    </>
+    </div>
   );
 }
 

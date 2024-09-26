@@ -3,8 +3,6 @@ import { useAddSubtaskMutation } from "../redux/Features/taskApiSlice"; // Adjus
 import { toast } from "react-toastify";
 import { AddSubTaskProps } from "../redux/Features/types";
 
-
-
 const AddSubTask: React.FC<AddSubTaskProps> = ({ taskId, onClose }) => {
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -13,10 +11,12 @@ const AddSubTask: React.FC<AddSubTaskProps> = ({ taskId, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log({ taskId, onClose });
+      console.log({ taskId, description, date });
       await addSubtask({ taskId, description, date }).unwrap();
       toast.success("Subtask added successfully!");
       onClose();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Error adding subtask. Please try again.");
     }
