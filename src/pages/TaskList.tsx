@@ -2,18 +2,22 @@ import { useState } from "react";
 import { SubtaskList } from "./SubTaskList";
 import { useUpdateTaskStatusMutation } from "../redux/Features/taskApiSlice";
 import AddSubTask from "./AddSubTask";
-import { Modal } from 'flowbite-react';
+import { Modal } from "flowbite-react";
 import EditTask from "./EditTask";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Task, TaskListProps } from "../redux/Features/types";
+import { Task } from "../redux/Features/types";
 
-export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
+interface TaskListProps {
+  tasks: Task[] | undefined;
+}
+
+export const TaskList = ({ tasks }: TaskListProps) => {
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [isAddingSubtask, setIsAddingSubtask] = useState<string | null>(null);
   const [, setEditingTaskId] = useState<string | null>(null);
   const [openTaskModal, setOpenTaskModal] = useState(false);
-  const [currentTask, setCurrentTask] = useState<Task | null>(null); 
-  const [showDate, setShowDate] = useState<Record<string, boolean>>({}); 
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [showDate, setShowDate] = useState<Record<string, boolean>>({});
 
   const handleCheckboxChange = async (task: Task) => {
     const newStatus = !task.status;
@@ -41,13 +45,13 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   const toggleDateVisibility = (taskId: string) => {
     setShowDate((prev) => ({
       ...prev,
-      [taskId]: !prev[taskId], 
+      [taskId]: !prev[taskId],
     }));
   };
 
   return (
     <div>
-      {tasks.map((task) => (
+      {tasks?.map((task) => (
         <div key={task._id} className="p-3 mb-2 dark:text-gray-200">
           <div className="flex justify-between">
             <div className="flex gap-2 items-center">
@@ -57,7 +61,11 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
                 checked={task.status}
                 onChange={() => handleCheckboxChange(task)}
               />
-              <p style={{ textDecoration: task.status ? "line-through" : "none" }}>
+              <p
+                style={{
+                  textDecoration: task.status ? "line-through" : "none",
+                }}
+              >
                 {task.description}
               </p>
             </div>
@@ -75,7 +83,7 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
                 >
                   <MenuItem>
                     <button
-                      onClick={() => openModalForAddSubtask(task)} 
+                      onClick={() => openModalForAddSubtask(task)}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                     >
                       Add Subtask
@@ -83,23 +91,21 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
                   </MenuItem>
                   <MenuItem>
                     <button
-                      onClick={() => openModalForEdit(task)} 
+                      onClick={() => openModalForEdit(task)}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                     >
                       Edit task
                     </button>
                   </MenuItem>
                   <MenuItem>
-                    <button
-                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                    >
-                     Delete task
+                    <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900">
+                      Delete task
                     </button>
                   </MenuItem>
                 </MenuItems>
               </Menu>
-              <i 
-                className="fas fa-angle-down cursor-pointer ml-3" 
+              <i
+                className="fas fa-angle-down cursor-pointer ml-3"
                 onClick={() => toggleDateVisibility(task._id)}
               ></i>
             </div>
@@ -117,20 +123,20 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
           {openTaskModal && (
             <>
               <div className="" />
-              <Modal 
-                show={openTaskModal} 
-                position='center' 
-                onClose={() => setOpenTaskModal(false)} 
+              <Modal
+                show={openTaskModal}
+                position="center"
+                onClose={() => setOpenTaskModal(false)}
                 className="w-1/4 bg-white dark:bg-gray-700 h-fit mx-auto mt-40"
               >
-                <button 
-                  onClick={() => setOpenTaskModal(false)} 
+                <button
+                  onClick={() => setOpenTaskModal(false)}
                   className="absolute top-0 right-0 text-3xl text-gray-500"
                 >
-                  &times; 
+                  &times;
                 </button>
 
-                <Modal.Body className="w-full mx-auto"> 
+                <Modal.Body className="w-full mx-auto">
                   <div className="rounded mx-auto flex ">
                     {isAddingSubtask === currentTask?._id ? (
                       <div className="w-full">
@@ -138,12 +144,12 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
                           taskId={currentTask._id}
                           onClose={() => {
                             setIsAddingSubtask(null);
-                            setOpenTaskModal(false); 
+                            setOpenTaskModal(false);
                           }}
                         />
                       </div>
                     ) : (
-                      currentTask && ( // Ensure currentTask is not null before passing it to EditTask
+                      currentTask && (
                         <div className="w-full">
                           <EditTask
                             task={currentTask}

@@ -1,5 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
-import { useGetAllCollectionsQuery } from "../redux/Features/taskApiSlice";
+import {
+  useGetAllCollectionsQuery,
+  useGetUserTaskQuery,
+} from "../redux/Features/taskApiSlice";
 import { useGetUserfavouriteQuery } from "../redux/Features/userApiSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/Features/selector";
@@ -11,8 +14,8 @@ function Collections() {
     error,
     isLoading,
   } = useGetAllCollectionsQuery();
-
   const { data } = useGetUserfavouriteQuery(userInfo?._id);
+  const { data: tasksData } = useGetUserTaskQuery();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -23,8 +26,6 @@ function Collections() {
       "status" in error ? error.status : error.message || "Unknown error";
     return <div>Error: {errorMessage}</div>;
   }
-
-  const collections = collectionsData?.collections || [];
 
   return (
     <div className="max-w-screen-md h-[90vh] mx-auto p-7">
@@ -59,8 +60,15 @@ function Collections() {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {collections.map((collection) => {
-          
+        {collectionsData?.collections.map((collection) => {
+          const tasksForCollection = tasksData?.tasks.filter(
+            (task) => task.collectionId._id === collection._id
+          );
+
+          const totalTasks = tasksForCollection?.length || 0;
+          const completedTasks =
+            tasksForCollection?.filter((task) => task.status === true).length ||
+            0;
 
           return (
             <Link
@@ -79,7 +87,7 @@ function Collections() {
                     {collection.collectionName}
                   </h3>
                   <p className="dark:text-gray-200">
-                  1/2 done
+                    {completedTasks}/{totalTasks} done
                   </p>
                 </div>
 

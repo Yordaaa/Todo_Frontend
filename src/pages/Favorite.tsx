@@ -6,11 +6,13 @@ import {
 import { selectUser } from "../redux/Features/selector";
 import { Link, NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useGetUserTaskQuery } from "../redux/Features/taskApiSlice";
 
 const Favorite = () => {
   const userInfo = useSelector(selectUser);
   const [removeFromfavourite] = useRemoveFromfavouriteMutation();
   const { data, isLoading } = useGetUserfavouriteQuery(userInfo?._id);
+  const { data: tasksData } = useGetUserTaskQuery();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,7 +24,6 @@ const Favorite = () => {
     try {
       await removeFromfavourite({ collectionId }).unwrap();
       toast.success("Removed from favourites");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Unexpected error occurred while removing from favourites");
     }
@@ -56,13 +57,17 @@ const Favorite = () => {
         </div>
       </div>
       <div className="max-w-screen-2xl mx-auto p-5 h-screen">
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {data?.favourite?.map((collection) => {
-            const totalTasks = collection.tasks.length;
-            const completedTasks = collection.tasks.filter(
-              (task) => task.status
-            ).length;
+          {data?.favourite.map((collection) => {
+            console.log(tasksData?.tasks);
+            const tasksForCollection = tasksData?.tasks.filter(
+              (task) => task.collectionId._id === collection._id
+            );
+
+            const totalTasks = tasksForCollection?.length || 0;
+            const completedTasks =
+              tasksForCollection?.filter((task) => task.status === true)
+                .length || 0;
 
             return (
               <div
@@ -100,13 +105,12 @@ const Favorite = () => {
               </div>
             );
           })}
-       
-            <div className="mb-14 border border-gray-400 border-dashed rounded-lg flex items-center justify-center">
-              <Link to="/addtask">
-                <i className="fas fa-plus text-gray-500 text-2xl rounded-md"></i>
-              </Link>
-            </div>
-       
+
+          <div className="mb-14 border border-gray-400 border-dashed rounded-lg flex items-center justify-center">
+            <Link to="/addtask">
+              <i className="fas fa-plus text-gray-500 text-2xl rounded-md"></i>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
