@@ -24,8 +24,7 @@ function CollectionDetails() {
 
   const {
     data: collectionTasks,
-    isLoading,
-    isError,
+    isLoading
   } = useGetUserTaskByIdQuery(id as string, {});
 
   const [addfavourite] = useAddfavouriteMutation();
@@ -75,6 +74,10 @@ function CollectionDetails() {
   const countCompleteTasks = () => {
     return collectionTasks?.tasks.filter((task) => !task.status).length || 0;
   };
+  const Tasks = () => {
+    return collectionTasks?.tasks.filter((task) => task.status).length || 0;
+  };
+
 
   // Extract collection name safely
   const collectionName =
@@ -84,11 +87,9 @@ function CollectionDetails() {
     <>
       {isLoading ? (
         <p>Loading tasks...</p>
-      ) : isError ? (
-        <p>Error loading tasks. Please try again later.</p>
-      ) : (
+      ):(
         <div key={id}>
-          <section className="flex max-w-screen-2xl mx-auto h-screen">
+          <section className="flex max-w-screen-2xl mx-auto p-5 min-h-screen">
             <div className="w-fit">
               <Sidenav />
             </div>
@@ -150,7 +151,7 @@ function CollectionDetails() {
 
               <div className="pt-20 px-10">
                 <h1 className="font-bold dark:text-gray-200 text-xl pb-3">
-                  Completed - {countCompleteTasks()}
+                  Completed - {Tasks()}
                 </h1>
 
                 <TaskList

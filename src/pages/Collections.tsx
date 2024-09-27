@@ -26,7 +26,7 @@ function Collections() {
   }
 
   return (
-    <div className="max-w-screen-md h-[90vh] mx-auto p-7">
+    <div className="max-w-screen-md min-h-[90vh] mx-auto p-7">
       <Link
         to="/collections"
         className="text-3xl font-bold mb-7 dark:text-white"

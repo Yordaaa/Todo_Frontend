@@ -17,7 +17,7 @@ function Sidenav() {
   const collections = data?.collections || [];
 
   return (
-    <aside className="w-64 h-full bg-white dark:bg-gray-800 dark:text-gray-200  py-5 px-10">
+    <aside className="w-52 md:w-64 h-full bg-white dark:bg-gray-800 dark:text-gray-200  py-5 px-10">
       <Link to="/collections" className="text-2xl font-bold mb-5">
         Collections
       </Link>
