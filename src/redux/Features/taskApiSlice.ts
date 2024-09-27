@@ -7,6 +7,7 @@ import {
 
 export const taskApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Fetch all collections
     getAllCollections: builder.query<GetAllCollectionsResponse, void>({
       query: () => ({
         url: "/collection/get-all-collections",
@@ -14,13 +15,15 @@ export const taskApiSlice = apiSlice.injectEndpoints({
       providesTags: ["collection"],
     }),
 
+    // Fetch tasks by collection ID
     getUserTaskById: builder.query<GetTasksResponseProps, string>({
       query: (id) => ({
-        url: `/tasks/get-collection-tasks/${id}`,
+        url: `/tasks/get-user-tasks/${id}`,
       }),
       providesTags: ["tasks"],
     }),
 
+    // Update task status
     updateTaskStatus: builder.mutation({
       query: ({ id, status }) => ({
         url: `/tasks/update-task-status/${id}`,
@@ -30,48 +33,53 @@ export const taskApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["tasks"],
     }),
 
+    // Add a new task
     addTask: builder.mutation({
-      query: ({ collectionId, ...data }) => ({
-        url: `/tasks/add-task/${collectionId}`,
+      query: (data) => ({
+        url: "/tasks/add-tasks",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["tasks"],
+      invalidatesTags: ["tasks", "collection"], // Invalidate both tasks and collections
     }),
 
-    addSubtask: builder.mutation({
-      query: ({ taskId, description, date }) => ({
-        url: `/tasks/add-subtask/${taskId}`,
-        method: "POST",
-        body: { description, date },
-      }),
-      invalidatesTags: ["tasks"],
-    }),
-
+    // Edit an existing task
     editTask: builder.mutation({
       query: ({ id, description, date, status }) => ({
-        url: `/tasks/edit-task/${id}`,
+        url: `/tasks/edit-tasks/${id}`,
         method: "PUT",
         body: { description, date, status },
       }),
       invalidatesTags: ["tasks"],
     }),
+
+    // Fetch all user tasks
     getUserTask: builder.query<GetTasksResponseProps, void>({
       query: () => ({
-        url: `/tasks/get-user-task`,
+        url: `/tasks/get-user-tasks`,
         method: "GET",
       }),
       providesTags: ["tasks"],
     }),
+
+    // Fetch subtasks of a task
     getSubTasks: builder.query<getSubTaskProps, string | undefined>({
       query: (taskId) => {
-        console.log(taskId);
         return {
-          url: `/tasks/get-subtasks/${taskId}`,
+          url: `/get-tasks/${taskId}`,
           method: "GET",
         };
       },
       providesTags: ["tasks"],
+    }),
+
+    // Delete a task
+    deleteTask: builder.mutation({
+      query: (taskId) => ({
+        url: `/tasks/delete-task/${taskId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["tasks", "collection"], // Invalidate tasks and collections after delete
     }),
   }),
 });
@@ -81,8 +89,8 @@ export const {
   useGetUserTaskByIdQuery,
   useUpdateTaskStatusMutation,
   useAddTaskMutation,
-  useAddSubtaskMutation,
   useEditTaskMutation,
   useGetUserTaskQuery,
   useGetSubTasksQuery,
+  useDeleteTaskMutation, // Export delete task mutation
 } = taskApiSlice;

@@ -1,7 +1,7 @@
 export interface UserProps {
   _id: string;
   name: string;
-  favourite?: string[]; // Optional, in case the user has no favorites
+  favourite?: string[];
 }
 
 export interface LoginUserInputProps {
@@ -44,7 +44,7 @@ export interface AddSubTaskProps {
 
 export interface Task {
   _id: string;
-  date: string;
+  date: Date;
   description: string;
   status: boolean;
   subtasks: Subtask[];
@@ -57,6 +57,7 @@ export interface Task {
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 export interface collectionResTyp {
   _id: string;
@@ -79,6 +80,7 @@ export interface EditTaskInputProps {
 export interface TaskListProps {
   task: Task | null;
 }
+
 export type CollectionsData = {
   collections: collectionResTyp[];
 };
@@ -99,7 +101,7 @@ export interface SubtaskListProps {
 }
 export interface EditTaskProp {
   task: Task;
-  onClose: () => void; // Function to close the modal
+  onClose: () => void;
 }
 
 export interface Subtask {
@@ -115,19 +117,20 @@ export interface Subtask {
 export interface Task {
   _id: string;
   description: string;
-  status: boolean; // Assuming status is a boolean indicating completion
-  date: string; // Assuming date is in ISO format
-  subtasks: Subtask[]; // Array of subtasks
+  status: boolean; 
+  date: Date; 
+  subtasks: Subtask[]; 
 }
 
 export interface TaskListProps {
-  tasks: Task[]; // Array of Task objects
+  tasks: Task[]; 
+  onAddSubtask: (taskId: string) => void;
 }
 export interface Task {
   _id: string;
   description: string;
-  status: boolean; // Assuming status is a boolean indicating completion
-  date: string; // Assuming date is in ISO format
+  status: boolean; 
+  date: Date; 
 }
 
 export interface Collection {
@@ -137,11 +140,12 @@ export interface Collection {
 }
 
 export interface UserFavouritesResponse {
-  favourite: Collection[]; // Assuming this is the structure of the user's favourites
+  favourite: Collection[]; 
 }
 
 export interface GetTasksResponseProps {
   success: boolean;
+  collectionName: string;
   tasks: Task[];
 }
 
@@ -149,3 +153,15 @@ export interface getSubTaskProps {
   success: boolean;
   subtasks: Subtask[];
 }
+
+export interface AddTaskModalProps {
+  showModal: boolean;
+  onClose: () => void;
+  collectionId?: string;
+  taskId?: string;
+}
+
+
+export interface GetCollectionDetailsResponse {
+  success: boolean;
+  collectionName?: string; }

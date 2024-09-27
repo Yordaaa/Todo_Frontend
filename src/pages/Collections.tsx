@@ -6,21 +6,19 @@ import {
 import { useGetUserfavouriteQuery } from "../redux/Features/userApiSlice";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/Features/selector";
+import AddTaskModal from "../components/AddTaskModal";
+import { useState } from "react";
 
 function Collections() {
   const userInfo = useSelector(selectUser);
-  const {
-    data: collectionsData,
-    error,
-    isLoading,
-  } = useGetAllCollectionsQuery();
-  const { data } = useGetUserfavouriteQuery(userInfo?._id);
+  const { data: collectionsData, error } = useGetAllCollectionsQuery();
+
+  const { data: favouriteData } = useGetUserfavouriteQuery(userInfo?._id);
   const { data: tasksData } = useGetUserTaskQuery();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
 
+  // Error handling
   if (error) {
     const errorMessage =
       "status" in error ? error.status : error.message || "Unknown error";
@@ -42,7 +40,7 @@ function Collections() {
             className={({ isActive }) =>
               isActive
                 ? "block py-1 px-3 rounded-l-md border border-red-500 text-red-500"
-                : "block py-1 px-3 rounded-l-md border dark:text-white border-gray-400  transition-colors"
+                : "block py-1 px-3 rounded-l-md border dark:text-white border-gray-400 transition-colors"
             }
           >
             All Collections
@@ -51,8 +49,8 @@ function Collections() {
             to="/favorite"
             className={({ isActive }) =>
               isActive
-                ? "block py-1 px-3 rounded-r-md  border-red-500 text-red-500"
-                : "block py-1 px-3 rounded-r-md border dark:text-white border-gray-400  transition-colors"
+                ? "block py-1 px-3 rounded-r-md border-red-500 text-red-500"
+                : "block py-1 px-3 rounded-r-md border dark:text-white border-gray-400 transition-colors"
             }
           >
             Favourites
@@ -61,8 +59,9 @@ function Collections() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {collectionsData?.collections.map((collection) => {
-          const tasksForCollection = tasksData?.tasks.filter(
-            (task) => task.collectionId._id === collection._id
+          // Check if tasksData is defined before filtering
+          const tasksForCollection = tasksData?.tasks?.filter(
+            (task) => task.collectionId?._id === collection._id // Use optional chaining here
           );
 
           const totalTasks = tasksForCollection?.length || 0;
@@ -93,7 +92,9 @@ function Collections() {
 
                 <i
                   className={`far fa-circle text-2xl ${
-                    data?.favourite?.some((item) => item._id === collection._id)
+                    favouriteData?.favourite?.some(
+                      (item) => item._id === collection._id
+                    )
                       ? "text-green-500 text-bold"
                       : "text-gray-400"
                   }`}
@@ -104,12 +105,20 @@ function Collections() {
           );
         })}
 
+        {/* Button to add a new task */}
         <div className="mb-14 border border-gray-400 border-dashed rounded-lg flex items-center justify-center">
-          <Link to="/addtask">
-            <i className="fas fa-plus text-gray-500 text-2xl rounded-md"></i>
-          </Link>
+          <button
+            onClick={() => setOpenTaskModal(true)}
+            className="fas fa-plus text-gray-500 text-2xl rounded-md"
+          ></button>
         </div>
       </div>
+
+      {/* Modal for adding a task */}
+      <AddTaskModal
+        showModal={openTaskModal}
+        onClose={() => setOpenTaskModal(false)}
+      />
     </div>
   );
 }

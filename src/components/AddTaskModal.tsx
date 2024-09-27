@@ -1,4 +1,3 @@
-// AddTaskModal.tsx
 import React, { useState } from "react";
 import { Modal } from "flowbite-react";
 import { toast } from "react-toastify";
@@ -6,20 +5,18 @@ import {
   useAddTaskMutation,
   useGetAllCollectionsQuery,
 } from "../redux/Features/taskApiSlice";
+import { AddTaskModalProps } from "../redux/Features/types";
 
-interface AddTaskModalProps {
-  showModal: boolean;
-  onClose: () => void;
-}
+const AddTaskModal: React.FC<AddTaskModalProps> = ({
+  showModal,
+  onClose,
+  collectionId,
+}) => {
+  const { data: collectionsData } = useGetAllCollectionsQuery();
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({ showModal, onClose }) => {
-  const {
-    data: collectionsData,
-    isLoading,
-    isError,
-  } = useGetAllCollectionsQuery();
-
-  const [selectedCollectionId, setSelectedCollectionId] = useState<string>("");
+  const [selectedCollectionId, setSelectedCollectionId] = useState<string>(
+    collectionId || ""
+  );
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [addTask, { isLoading: isAdding }] = useAddTaskMutation();
@@ -28,40 +25,37 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ showModal, onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedCollectionId || !description || !date) {
+    if (!description || !date) {
       toast.error("Please fill out all fields.");
       return;
     }
 
     try {
       await addTask({
-        collectionId: selectedCollectionId,
         description,
         date,
+        collectionId: selectedCollectionId || undefined,
       }).unwrap();
 
       toast.success("Task added successfully!");
-      onClose(); 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onClose();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Error adding task. Please try again.");
     }
   };
 
-  if (isLoading) return <p>Loading collections...</p>;
-  if (isError) return <p>Error loading collections.</p>;
-
   return (
     <Modal
       show={showModal}
-      onClose={onClose} 
+      onClose={onClose}
       className="w-1/3 bg-white dark:bg-gray-700 h-fit mx-auto mt-40"
     >
-      <button 
-        onClick={onClose} 
+      <button
+        onClick={onClose}
         className="absolute top-0 right-0 text-3xl text-gray-500"
       >
-        &times; 
+        &times;
       </button>
       <Modal.Body className="w-full mx-auto">
         <form onSubmit={handleSubmit} className="space-y-4 md:space-y-2">
@@ -74,21 +68,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ showModal, onClose }) => {
             required
           />
           <div className="flex gap-3">
-            <select
-              value={selectedCollectionId}
-              onChange={(e) => setSelectedCollectionId(e.target.value)}
-              className="block w-full border p-1 rounded-md"
-              required
-            >
-              <option value="">Select a Collection</option>
-              {collections.map((collection) => (
-                <option key={collection._id} value={collection._id}>
-                  {collection.collectionName}
-                </option>
-              ))}
-            </select>
+            {!collectionId && (
+              <select
+                value={selectedCollectionId}
+                onChange={(e) => setSelectedCollectionId(e.target.value)}
+                className="block w-full border p-1 rounded-md"
+                required
+              >
+                <option value="">Select a Collection</option>
+                {collections.map((collection) => (
+                  <option key={collection._id} value={collection._id}>
+                    {collection.collectionName}
+                  </option>
+                ))}
+              </select>
+            )}
             <input
-              type="date"
+              type="datetime-local"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="block w-full border p-1 rounded-md"

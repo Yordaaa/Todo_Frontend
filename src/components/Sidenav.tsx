@@ -17,7 +17,7 @@ function Sidenav() {
   const collections = data?.collections || [];
 
   return (
-    <aside className="w-64 h-full bg-white dark:bg-gray-800 dark:text-gray-200 py-5 px-10">
+    <aside className="w-64 h-full bg-white dark:bg-gray-800 dark:text-gray-200  py-5 px-10">
       <Link to="/collections" className="text-2xl font-bold mb-5">
         Collections
       </Link>
@@ -29,7 +29,7 @@ function Sidenav() {
               className={({ isActive }) =>
                 isActive
                   ? "block py-2 px-3 rounded bg-pink-50 text-red-500"
-                  : "block py-2 px-3 rounded hover:bg-gray-200 transition-colors"
+                  : "block py-2 px-3 rounded hover:bg-gray-200 dark:hover:text-gray-800 transition-colors"
               }
             >
               <div className="flex gap-3 items-center">

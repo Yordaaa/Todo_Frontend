@@ -1,8 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import {
-  useGetSubTasksQuery,
-  useGetUserTaskByIdQuery,
-} from "../redux/Features/taskApiSlice";
+import { useGetUserTaskByIdQuery } from "../redux/Features/taskApiSlice";
 import { TaskList } from "./TaskList";
 import Sidenav from "../components/Sidenav";
 import { useSelector } from "react-redux";
@@ -13,7 +10,6 @@ import {
   useRemoveFromfavouriteMutation,
 } from "../redux/Features/userApiSlice";
 import { toast } from "react-toastify";
-import { Task } from "../redux/Features/types";
 import { useState } from "react";
 import AddTaskModal from "../components/AddTaskModal";
 
@@ -22,27 +18,28 @@ function CollectionDetails() {
   const navigate = useNavigate();
   const userInfo = useSelector(selectUser);
   const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
-  console.log("object", id);
-  const { data: collectionTasks, isLoading } = useGetUserTaskByIdQuery(
-    id as string,
-    {
-      refetchOnMountOrArgChange: true,
-    }
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
+    undefined
   );
-  console.log(collectionTasks);
+
+  const {
+    data: collectionTasks,
+    isLoading,
+    isError,
+  } = useGetUserTaskByIdQuery(id as string, {});
+
   const [addfavourite] = useAddfavouriteMutation();
   const [removeFromfavourite] = useRemoveFromfavouriteMutation();
+  const { data: favouriteData } = useGetUserfavouriteQuery(userInfo?._id);
 
-  const { data } = useGetUserfavouriteQuery(userInfo?._id);
-
-  const handleAddfavourite = async (collectionId?: string) => {
+  const handleAddfavourite = async () => {
     if (!userInfo) {
       navigate("/");
       return;
     }
 
     try {
-      await addfavourite({ collectionId }).unwrap();
+      await addfavourite({ collectionId: id }).unwrap();
       toast.success("Added to favourites");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -50,16 +47,14 @@ function CollectionDetails() {
     }
   };
 
-  const handleRemoveFromfavourite = async (collectionId?: string) => {
-    console.log(collectionId);
+  const handleRemoveFromfavourite = async () => {
     if (!userInfo) {
-      navigate("/", { state: `/${collectionId}` });
+      navigate("/");
       return;
     }
 
     try {
-      await removeFromfavourite({ collectionId }).unwrap();
-      console.log(collectionId);
+      await removeFromfavourite({ collectionId: id }).unwrap();
       toast.success("Removed from favourites");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -67,77 +62,120 @@ function CollectionDetails() {
     }
   };
 
-  const isInfavourite = data?.favourite?.some((item) => item._id === id);
-  const collectionName = collectionTasks?.tasks.map((task: Task) => {
-    return task.collectionId.collectionName;
-  });
+  const handleAddSubtask = (taskId: string) => {
+    setSelectedTaskId(taskId);
+    setOpenTaskModal(true);
+  };
+
+  const isInfavourite = favouriteData?.favourite?.some(
+    (item) => item._id === id
+  );
+
+  // Function to count completed tasks
+  const countCompleteTasks = () => {
+    return collectionTasks?.tasks.filter((task) => !task.status).length || 0;
+  };
+
+  // Extract collection name safely
+  const collectionName =
+    collectionTasks?.collectionName || "Unnamed Collection";
 
   return (
-    <div key={id}>
+    <>
       {isLoading ? (
-        "loading..."
+        <p>Loading tasks...</p>
+      ) : isError ? (
+        <p>Error loading tasks. Please try again later.</p>
       ) : (
-        <section className="flex max-w-screen-2xl mx-auto h-screen">
-          <div className="w-fit">
-            <Sidenav />
-          </div>
-          <div className="max-w-screen-md mx-auto w-full">
-            <div className="flex gap-3 m-5 items-center">
-              <Link
-                to="/collections"
-                className="fas fa-less-than bg-pink-400 py-1 px-2 text-gray-800 rounded text-xs"
-              ></Link>
-              <h1 className="text-2xl font-bold dark:text-white">
-                {collectionName}
-              </h1>
-              {isInfavourite ? (
-                <button
-                  onClick={() => handleRemoveFromfavourite(id)}
-                  className={`fas fa-heart text-2xl ${
-                    isInfavourite ? "text-red-600" : ""
-                  }`}
-                ></button>
-              ) : (
-                <button
-                  onClick={() => handleAddfavourite(id)}
-                  className="far fa-heart text-2xl hover:text-red-600 text-gray-800 dark:text-gray-200 mr-2"
-                ></button>
-              )}
+        <div key={id}>
+          <section className="flex max-w-screen-2xl mx-auto h-screen">
+            <div className="w-fit">
+              <Sidenav />
             </div>
+            <div className="max-w-screen-md mx-auto w-full">
+              <div className="flex gap-3 m-5 items-center">
+                <Link
+                  to="/collections"
+                  className="fas fa-less-than bg-pink-400 py-1 px-2 text-gray-800 rounded text-xs"
+                ></Link>
+                <h1 className="text-2xl font-bold dark:text-white">
+                  {collectionName}
+                </h1>
+                {isInfavourite ? (
+                  <button
+                    onClick={handleRemoveFromfavourite}
+                    className={`fas fa-heart text-2xl ${
+                      isInfavourite ? "text-red-600" : ""
+                    }`}
+                  ></button>
+                ) : (
+                  <button
+                    onClick={handleAddfavourite}
+                    className="far fa-heart text-2xl hover:text-red-600 text-gray-800 dark:text-gray-200 mr-2"
+                  ></button>
+                )}
+              </div>
 
-            <div className="flex gap-3 items-center ml-7">
-            <button
-                onClick={() => setOpenTaskModal(true)}
-                className="fas fa-plus bg-pink-500 text-white text-xs rounded shadow-sm p-1 px-2"
-              ></button>
-              <p className="text-sm font-bold dark:text-white">Add Task</p>
-            </div>
+              <div className="flex gap-3 items-center ml-7 shadow shadow-b-md pb-3">
+                <button
+                  onClick={() => setOpenTaskModal(true)}
+                  className="fas fa-plus bg-pink-500 text-white text-xs rounded shadow-sm p-1 px-2"
+                ></button>
+                <p className="text-sm font-bold dark:text-white">Add Task</p>
+              </div>
+              <h2 className="ml-6 pt-2 dark:text-white">
+                Tasks - {countCompleteTasks()}
+              </h2>
 
-            <h2 className="ml-6 pt-2 dark:text-white">
-              Tasks: {collectionTasks?.tasks.length || 0}
-            </h2>
-
-            <div className="ml-10">
-              {collectionTasks?.tasks && collectionTasks?.tasks.length === 0 ? (
-                <div className="flex justify-center">
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png"
-                    alt="No tasks"
-                    className="h-40 m-10"
+              <div className="ml-10">
+                {collectionTasks?.tasks.length === 0 ? (
+                  <div className="flex justify-center">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/5058/5058432.png"
+                      alt="No tasks"
+                      className="h-40 m-10"
+                    />
+                  </div>
+                ) : (
+                  <TaskList
+                    tasks={
+                      collectionTasks?.tasks.filter((task) => !task.status) ||
+                      []
+                    }
+                    onAddSubtask={handleAddSubtask}
+                    task={null}
                   />
-                </div>
-              ) : (
-                <TaskList tasks={collectionTasks?.tasks} />
-              )}
+                )}
+              </div>
+
+              <div className="pt-20 px-10">
+                <h1 className="font-bold dark:text-gray-200 text-xl pb-3">
+                  Completed - {countCompleteTasks()}
+                </h1>
+
+                <TaskList
+                  tasks={
+                    collectionTasks?.tasks.filter((task) => task.status) || []
+                  }
+                  onAddSubtask={handleAddSubtask}
+                  task={null}
+                />
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          <AddTaskModal
+            showModal={openTaskModal}
+            onClose={() => {
+              setOpenTaskModal(false);
+              setSelectedTaskId(undefined);
+            }}
+            collectionId={id}
+            taskId={selectedTaskId}
+          />
+        </div>
       )}
-      <AddTaskModal
-        showModal={openTaskModal}
-        onClose={() => setOpenTaskModal(false)}
-      />
-    </div>
+    </>
   );
 }
 

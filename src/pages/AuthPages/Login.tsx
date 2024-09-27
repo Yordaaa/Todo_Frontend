@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../redux/Features/authSlice";
 import { useLoginMutation } from "../../redux/Features/authApiSlice";
-import { resTypeProps } from "../../redux/Features/types";
+import { ResTypeProps } from "../../redux/Features/types";
 
 function Login() {
   const [name, setName] = useState("");
@@ -19,7 +19,7 @@ function Login() {
     try {
       const res = await login({ name, password });
       if ("data" in res) {
-        const { data } = res as { data: resTypeProps };
+        const { data } = res as { data: ResTypeProps };
         toast.success("Signed in successfully");
         dispatch(setCredentials(data.userInfo));
         navigate("/collections");
