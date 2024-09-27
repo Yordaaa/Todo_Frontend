@@ -24,11 +24,12 @@ Make sure you have the following installed on your machine:
 
 ### Installation
 1. **Clone the repository**:
-git clone https://github.com/Yordaaa/Todo_Frontend.git
-2. **cd todo_frontend**
+    ```bash
+   git clone https://github.com/Yordaaa/Todo_Frontend.git
+   cd todo_frontend
 
-3. **Install dependencies**:
+4. **Install dependencies**:
 npm install
 
-4. **start the application**:
+5. **start the application**:
 npm run dev
