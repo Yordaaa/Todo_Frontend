@@ -7,7 +7,7 @@ import AddSubTask from "./AddSubTask";
 import { Modal } from "flowbite-react";
 import EditTask from "./EditTask";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Task, TaskListProps } from "../redux/Features/types";
+import { Subtask, Task, TaskListProps } from "../redux/Features/types";
 import { toast } from "react-toastify";
 import { formatDistanceToNow } from "date-fns";
 
@@ -20,7 +20,7 @@ export const TaskList = ({ tasks }: TaskListProps) => {
   const [showSubtasks, setShowSubtasks] = useState<Record<string, boolean>>({});
 
   // Handle task checkbox status change
-  const handleCheckboxChange = async (task: Task) => {
+  const handleCheckboxChange = async (task: Subtask) => {
     const newStatus = !task.status;
     try {
       await updateTaskStatus({ id: task._id, status: newStatus }).unwrap();
@@ -31,14 +31,14 @@ export const TaskList = ({ tasks }: TaskListProps) => {
   };
 
   // Open modal for editing task
-  const openModalForEdit = (task: Task) => {
-    setCurrentTask(task);
+  const openModalForEdit = (task: Task | Subtask) => {
+    setCurrentTask(task as Task);
     setOpenTaskModal(true);
   };
 
   // Open modal for adding subtask
-  const openModalForAddSubtask = (task: Task) => {
-    setCurrentTask(task);
+  const openModalForAddSubtask = (task: Task | Subtask) => {
+    setCurrentTask(task as Task);
     setIsAddingSubtask(task._id);
     setOpenTaskModal(true);
   };
@@ -63,7 +63,7 @@ export const TaskList = ({ tasks }: TaskListProps) => {
   };
 
   // Recursive function to render tasks and their subtasks
-  const renderTasks = (tasksToRender: Task[]) => {
+  const renderTasks = (tasksToRender: Subtask[]) => {
     return (
       <>
         {tasksToRender.map((task) => (
@@ -137,7 +137,7 @@ export const TaskList = ({ tasks }: TaskListProps) => {
                   })}
                 </p>
                 <div className="ml-5">
-                  {task.subtasks && task.subtasks.length > 0
+                  {task?.subtasks && task?.subtasks.length > 0
                     ? renderTasks(task?.subtasks) // Recursive call to render subtasks
                     : ""}
                 </div>

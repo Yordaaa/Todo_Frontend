@@ -18,9 +18,7 @@ function CollectionDetails() {
   const navigate = useNavigate();
   const userInfo = useSelector(selectUser);
   const [openTaskModal, setOpenTaskModal] = useState<boolean>(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(undefined);
 
   const {
     data: collectionTasks,

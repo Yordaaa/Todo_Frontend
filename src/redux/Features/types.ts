@@ -126,12 +126,6 @@ export interface TaskListProps {
   tasks: Task[]; 
   onAddSubtask: (taskId: string) => void;
 }
-export interface Task {
-  _id: string;
-  description: string;
-  status: boolean; 
-  date: Date; 
-}
 
 export interface Collection {
   _id: string;

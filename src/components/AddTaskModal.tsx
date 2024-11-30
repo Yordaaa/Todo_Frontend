@@ -7,11 +7,7 @@ import {
 } from "../redux/Features/taskApiSlice";
 import { AddTaskModalProps } from "../redux/Features/types";
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({
-  showModal,
-  onClose,
-  collectionId,
-}) => {
+const AddTaskModal: React.FC<AddTaskModalProps> = ({showModal, onClose, collectionId,}) => {
   const { data: collectionsData } = useGetAllCollectionsQuery();
 
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>(
@@ -19,6 +15,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   );
   const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<string>("");
+
   const [addTask, { isLoading: isAdding }] = useAddTaskMutation();
 
   const collections = collectionsData?.collections || [];
@@ -29,7 +26,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
       toast.error("Please fill out all fields.");
       return;
     }
-
     try {
       await addTask({
         description,

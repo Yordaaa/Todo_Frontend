@@ -79,7 +79,7 @@ export const taskApiSlice = apiSlice.injectEndpoints({
         url: `/tasks/delete-task/${taskId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["tasks", "collection"], // Invalidate tasks and collections after delete
+      invalidatesTags: ["tasks", "collection"],
     }),
   }),
 });
@@ -92,5 +92,5 @@ export const {
   useEditTaskMutation,
   useGetUserTaskQuery,
   useGetSubTasksQuery,
-  useDeleteTaskMutation, // Export delete task mutation
+  useDeleteTaskMutation,
 } = taskApiSlice;
